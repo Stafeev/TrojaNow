@@ -13,36 +13,41 @@ import java.net.URL;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.example.post.Post;
+
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
-import android.os.Build;
+
 
 public class NewPostActivityActivity extends ActionBarActivity implements OnClickListener{
 
-	String textStr ="";
-	String infoStr= "";
+	private String textStr ="";
+	private String infoStr= "";
 	String urlForSave = "http://cs578.roohy.me/status/list/";
 	String temp1 ="false", temp2 ="NA";
 	@Override
@@ -94,10 +99,12 @@ public class NewPostActivityActivity extends ActionBarActivity implements OnClic
     		if( anonFlag.isChecked()){
     			temp1 = "true";
     		}
-    		textStr = postMsg.getText().toString();
-    		infoStr = "Anon:"+ temp1 +",Temperature:"+ temp2;
+    		setTextStr(postMsg.getText().toString());
+    		setInfoStr("Anonym:"+ temp1 +",Temperature:"+ temp2);
     		//call function for sending data to restful api
-    		sendDataToRestfulWebService(textStr, infoStr, "14");
+    		//sendDataToRestfulWebService(getTextStr(), getInfoStr(), 14);
+    		SendDataToREST sendObj = new SendDataToREST();
+    		sendObj.execute(new String[]{urlForSave+"15/"});
     		
     	}
     	
@@ -106,20 +113,20 @@ public class NewPostActivityActivity extends ActionBarActivity implements OnClic
     /**
      * This method will send the data to Restful Web service 
      */
-    public void sendDataToRestfulWebService(String text, String info, String usr)
+    public void sendDataToRestfulWebService(String text, String info, int usr)
     {
-    	HttpParams params = new BasicHttpParams();
-    	params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-    	HttpClient httpClient = new DefaultHttpClient(params);
+    	HttpClient httpClient = new DefaultHttpClient();
     	urlForSave += usr+"/";
+    	System.out.println("POST url-> "+urlForSave);
     	System.out.println("http post url is >>> "+urlForSave);
         HttpPost postReq = new HttpPost(urlForSave);
         postReq.setHeader("Accept", "application/json");
-        postReq.setHeader("content-type", "application/json;charset=UTF-8");
+        postReq.setHeader("Content-type", "application/json");
     	
     	//for sending data in JSON format
         JSONObject dataToJSON = new JSONObject();
         try{
+        		//dataToJSON.put("pk", usr); 
         		dataToJSON.put("text", text); 
         		dataToJSON.put("info", info);
         		dataToJSON.put("user", usr);
@@ -128,8 +135,9 @@ public class NewPostActivityActivity extends ActionBarActivity implements OnClic
 	            StringEntity entity = new StringEntity(dataToJSON.toString());
 	            System.out.println("string entity-> "+ entity);
 	            postReq.setEntity(entity);
-	
-	            HttpResponse response = httpClient.execute(postReq);
+	        	System.out.println("entity is set ");
+	           // BasicResponseHandler bsh = new BasicResponseHandler();
+	            HttpResponse response = (HttpResponse) httpClient.execute(postReq);
 	            System.out.println("response is ----> "+ response);
 	            int resCode = response.getStatusLine().getStatusCode();
 	            System.out.println("response code = "+ resCode);
@@ -144,7 +152,11 @@ public class NewPostActivityActivity extends ActionBarActivity implements OnClic
 	           
         }catch (Exception e) {
             // TODO: handle exception
-        }  
+        }
+        finally{
+        	
+        	//httpClient.close();
+        }
     }
 	
     
@@ -203,4 +215,104 @@ public class NewPostActivityActivity extends ActionBarActivity implements OnClic
 			return rootView;
 		}
 	}*/
+  
+    
+     public String getTextStr() {
+		return textStr;
+	}
+
+	public void setTextStr(String textStr) {
+		this.textStr = textStr;
+	}
+
+
+	public String getInfoStr() {
+		return infoStr;
+	}
+
+	public void setInfoStr(String infoStr) {
+		this.infoStr = infoStr;
+	}
+
+
+	/** 
+     
+	 * Class to send data to REST API
+	 * @author User
+	 */
+	 
+		private class SendDataToREST extends AsyncTask<String, Void,String>{
+
+		    @Override
+		    protected String doInBackground(String... params) {
+
+		          try {
+
+		           /* URL urlStr = new URL(params[0]);
+		            HttpURLConnection httpConn = (HttpURLConnection) urlStr.openConnection();
+		            httpConn.setRequestMethod("POST");
+		            httpConn.setDoOutput(true);
+		           // httpConn.connect();*/
+		            //String aStr="",bStr="";
+		            
+		        	  HttpClient httpClient = new DefaultHttpClient();
+		          	//urlForSave += usr+"/";
+		          	//System.out.println("POST url-> "+urlForSave);
+		          	//System.out.println("http post url is >>> "+urlForSave);
+		              HttpPost postReq = new HttpPost(params[0]);
+		              postReq.setHeader("Accept", "application/json");
+		              postReq.setHeader("Content-type", "application/json");
+		        	  
+		            JSONObject dataToJSON = new JSONObject();
+		            //dataToJSON.put("pk", usr); 
+		            dataToJSON.put("text", getTextStr()); 
+		            dataToJSON.put("info", getInfoStr());
+		            dataToJSON.put("user", 15);
+		    	    System.out.println("json obj" + dataToJSON.toString());
+
+		    	    StringEntity entity = new StringEntity(dataToJSON.toString());
+		            postReq.setEntity(entity);
+		        	HttpResponse response = (HttpResponse) httpClient.execute(postReq);
+		            System.out.println("response is ----> "+ response);
+		            int resCode = response.getStatusLine().getStatusCode();
+		            System.out.println("response code = "+ resCode);
+		           // Toast.makeText(getApplicationContext(),response.getStatusLine().getStatusCode()+"", Toast.LENGTH_LONG).show();  
+		           
+					/*OutputStreamWriter writer = new OutputStreamWriter(httpConn.getOutputStream());
+					writer.write(dataToJSON.toString());
+					writer.flush();
+		           
+					String aStr="",bStr="";
+		            if(httpConn.getResponseCode() == HttpURLConnection.HTTP_OK)
+		            {
+		            	System.out.println("HTTP OK");
+		                BufferedReader buffReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
+		                while ((aStr = buffReader.readLine()) != null) {
+		            	   bStr += aStr;
+		   				}
+		            }
+		            System.out.println("response string is-> "+ bStr);
+		            return bStr;*/
+		            return "Post Success!";
+		        }catch (Exception exp)
+		        {
+		        	System.out.println(exp.getMessage());
+		        	return exp.getMessage();
+		        }
+		      
+		    }
+
+		    protected void onPostExecute(String result)
+		    {
+		    	Toast.makeText(getApplicationContext(),result, Toast.LENGTH_LONG).show();
+		    	Intent mainActivityIntent = new Intent(getBaseContext(), MainPostFeedActivity.class);
+        		startActivity(mainActivityIntent);
+		 			
+		 	}
+	}
+		
+
+		
+
+
 }

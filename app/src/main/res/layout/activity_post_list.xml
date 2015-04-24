@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   			android:layout_width="match_parent"
+    		android:layout_height="match_parent"
+    		android:orientation="vertical"
+	   		android:padding="6dip" >
+	
+	    <TextView
+	        android:id="@+id/postMsg"
+	        android:layout_width="match_parent"
+	        android:layout_height="26dip"
+	        android:ellipsize="marquee"
+	        android:singleLine="true"
+	        android:text="Message Description"
+	        android:textColor="#000000"
+	        android:textSize="16sp" />
+	
+	    <TextView
+	        android:id="@+id/byUser"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="User Name or Anonymous"
+	        android:textColor="#000000"
+	        android:textSize="16sp" />
+
+	    <TextView
+	        android:id="@+id/temp"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="Tempearture if any"
+	        android:textColor="#000000"
+	        android:textSize="16sp" />
+	   
+	    <TextView
+	        android:id="@+id/postPK"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="post PK"
+	        android:textColor="#000000"
+	        android:textSize="16sp"
+	         />
+
+	</LinearLayout>
