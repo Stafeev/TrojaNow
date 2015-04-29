@@ -48,6 +48,8 @@ public class MainPostFeedActivity extends ActionBarActivity implements OnClickLi
 	 String urlForDELETE = "http://cs578.roohy.me/status/";
 	 String urlDel = "";
 	 String aStr="",bStr="";
+	 String activeUserID ="";
+	 public final static String EXTRA_MESSAGE = "com.example.artemstafeev.trojanow.MESSAGE";
 	 
 	 
 	@Override
@@ -58,6 +60,9 @@ public class MainPostFeedActivity extends ActionBarActivity implements OnClickLi
                
         ListView list = (ListView) findViewById(R.id.PostList);
         list.setClickable(true);
+        
+        Intent intent = getIntent();
+        activeUserID = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
         
         GetDataFromREST data = new GetDataFromREST();
        	data.execute(new String[]{urlForGET});
@@ -70,7 +75,7 @@ public class MainPostFeedActivity extends ActionBarActivity implements OnClickLi
                
                 int postPK = listOfPosts.get(position).getPostID();
                 urlDel = urlForDELETE+postPK+"/";
-                String loggedUserID = "16";
+                String loggedUserID = activeUserID;
                 String postUserID = listOfPosts.get(position).getUser();
                 String[] userDtl = postUserID.split(":");
                 postUserID = userDtl[1].trim();
@@ -178,6 +183,7 @@ public class MainPostFeedActivity extends ActionBarActivity implements OnClickLi
 			switch(view.getId()) {
 	    	case R.id.newPostBtn :
 	    		Intent selectedPostIntent = new Intent(getBaseContext(), NewPostActivityActivity.class);
+	    		selectedPostIntent.putExtra(EXTRA_MESSAGE, activeUserID);
 			   startActivity(selectedPostIntent);
 	    	}
 			

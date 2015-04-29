@@ -2,4 +2,7 @@
     <string name="app_name">TrojaNow</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="underlinedText"><u>Sign up</u></string>
+    <string name="title_activity_display">DisplayActivity</string>
+    <string name="title_activity_sign_up">SignUpActivity</string>
 </resources>

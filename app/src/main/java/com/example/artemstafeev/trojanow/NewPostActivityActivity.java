@@ -50,6 +50,8 @@ public class NewPostActivityActivity extends ActionBarActivity implements OnClic
 	private String infoStr= "";
 	String urlForSave = "http://cs578.roohy.me/status/list/";
 	String temp1 ="false", temp2 ="NA";
+	 String activeUserID ="";
+	 public final static String EXTRA_MESSAGE = "com.example.artemstafeev.trojanow.MESSAGE";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -58,7 +60,9 @@ public class NewPostActivityActivity extends ActionBarActivity implements OnClic
 			getSupportFragmentManager().beginTransaction()
 					.add(R.id.container, new PlaceholderFragment()).commit();
 		}*/
-	
+		 Intent intent = getIntent();
+		 activeUserID = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+		
 		Button newPostSaveBtn = (Button) findViewById(R.id.savePostBtn);
 		newPostSaveBtn.setOnClickListener(this);
 	}
@@ -105,7 +109,8 @@ public class NewPostActivityActivity extends ActionBarActivity implements OnClic
 		    		//call function for sending data to restful api
 		    		//sendDataToRestfulWebService(getTextStr(), getInfoStr(), 14);
 		    		SendDataToREST sendObj = new SendDataToREST();
-		    		sendObj.execute(new String[]{urlForSave+"16/"});
+		    		
+		    		sendObj.execute(new String[]{urlForSave+activeUserID+"/"});
 		    	}
 		    		
 		   }
@@ -269,7 +274,7 @@ public class NewPostActivityActivity extends ActionBarActivity implements OnClic
 		            //dataToJSON.put("pk", usr); 
 		            dataToJSON.put("text", getTextStr()); 
 		            dataToJSON.put("info", getInfoStr());
-		            dataToJSON.put("user", 16);
+		            dataToJSON.put("user", activeUserID);
 		    	    System.out.println("json obj" + dataToJSON.toString());
 
 		    	    StringEntity entity = new StringEntity(dataToJSON.toString());
@@ -291,8 +296,9 @@ public class NewPostActivityActivity extends ActionBarActivity implements OnClic
 		    protected void onPostExecute(String result)
 		    {
 		    	Toast.makeText(getApplicationContext(),result, Toast.LENGTH_LONG).show();
-		    	Intent mainActivityIntent = new Intent(getBaseContext(), MainPostFeedActivity.class);
-        		startActivity(mainActivityIntent);
+		    	Intent mainPostActivityIntent = new Intent(getBaseContext(), MainPostFeedActivity.class);
+		    	mainPostActivityIntent.putExtra(EXTRA_MESSAGE, activeUserID);
+        		startActivity(mainPostActivityIntent);
 		 			
 		 	}
 	}
