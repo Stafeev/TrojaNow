@@ -90,23 +90,25 @@ public class NewPostActivityActivity extends ActionBarActivity implements OnClic
 	@Override
 	public void onClick(View view) {
 		// TODO Auto-generated method stub
-		System.out.println("save button clicked");
+		
 		switch(view.getId()) {
-    	case R.id.savePostBtn :
-    		
-    		EditText postMsg = (EditText) findViewById(R.id.postMsgTextArea);
-    		CheckBox anonFlag = (CheckBox) findViewById(R.id.chkBoxAnon);
-    		if( anonFlag.isChecked()){
-    			temp1 = "true";
-    		}
-    		setTextStr(postMsg.getText().toString());
-    		setInfoStr("Anonym:"+ temp1 +",Temperature:"+ temp2);
-    		//call function for sending data to restful api
-    		//sendDataToRestfulWebService(getTextStr(), getInfoStr(), 14);
-    		SendDataToREST sendObj = new SendDataToREST();
-    		sendObj.execute(new String[]{urlForSave+"15/"});
-    		
-    	}
+    		case R.id.savePostBtn :
+		    	{
+		    		System.out.println("save button clicked");	
+		    		EditText postMsg = (EditText) findViewById(R.id.postMsgTextArea);
+		    		CheckBox anonFlag = (CheckBox) findViewById(R.id.chkBoxAnon);
+		    		if( anonFlag.isChecked()){
+		    			temp1 = "true";
+		    		}
+		    		setTextStr(postMsg.getText().toString());
+		    		setInfoStr("Anonym:"+ temp1 +",Temperature:"+ temp2);
+		    		//call function for sending data to restful api
+		    		//sendDataToRestfulWebService(getTextStr(), getInfoStr(), 14);
+		    		SendDataToREST sendObj = new SendDataToREST();
+		    		sendObj.execute(new String[]{urlForSave+"16/"});
+		    	}
+		    		
+		   }
     	
     }
     
@@ -267,7 +269,7 @@ public class NewPostActivityActivity extends ActionBarActivity implements OnClic
 		            //dataToJSON.put("pk", usr); 
 		            dataToJSON.put("text", getTextStr()); 
 		            dataToJSON.put("info", getInfoStr());
-		            dataToJSON.put("user", 15);
+		            dataToJSON.put("user", 16);
 		    	    System.out.println("json obj" + dataToJSON.toString());
 
 		    	    StringEntity entity = new StringEntity(dataToJSON.toString());
@@ -276,23 +278,7 @@ public class NewPostActivityActivity extends ActionBarActivity implements OnClic
 		            System.out.println("response is ----> "+ response);
 		            int resCode = response.getStatusLine().getStatusCode();
 		            System.out.println("response code = "+ resCode);
-		           // Toast.makeText(getApplicationContext(),response.getStatusLine().getStatusCode()+"", Toast.LENGTH_LONG).show();  
-		           
-					/*OutputStreamWriter writer = new OutputStreamWriter(httpConn.getOutputStream());
-					writer.write(dataToJSON.toString());
-					writer.flush();
-		           
-					String aStr="",bStr="";
-		            if(httpConn.getResponseCode() == HttpURLConnection.HTTP_OK)
-		            {
-		            	System.out.println("HTTP OK");
-		                BufferedReader buffReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
-		                while ((aStr = buffReader.readLine()) != null) {
-		            	   bStr += aStr;
-		   				}
-		            }
-		            System.out.println("response string is-> "+ bStr);
-		            return bStr;*/
+		          
 		            return "Post Success!";
 		        }catch (Exception exp)
 		        {

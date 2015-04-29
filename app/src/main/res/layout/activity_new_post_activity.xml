@@ -73,38 +73,59 @@
         android:id="@+id/content"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@id/footer"
-        android:layout_below="@id/header" >
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" >
 
-       <EditText
-           android:id="@+id/postMsgTextArea"
-		    android:inputType="textMultiLine" 
-		    android:lines="8" 
-		    android:minLines="6" 
-		    android:gravity="top|left" 
-		    android:maxLines="10" 
-		    android:layout_height="wrap_content" 
-		    android:layout_width="fill_parent" 
-		    android:scrollbars="vertical" 
-		/>
+        <EditText
+            android:id="@+id/postMsgTextArea"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top|left"
+            android:inputType="textMultiLine"
+            android:lines="8"
+            android:maxLines="10"
+            android:minLines="6"
+            android:scrollbars="vertical" >
 
-       <CheckBox
-           android:id="@+id/chkBoxAnon"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_centerHorizontal="true"
-           android:layout_centerVertical="true"
-           android:text="Post as Anonymous" />
+            <requestFocus />
+        </EditText>
 
-       <Button
-           android:id="@+id/savePostBtn"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_below="@+id/chkBoxAnon"
-           android:layout_centerHorizontal="true"
-           android:layout_marginTop="30dp"
-           android:background="#FFCD05"
-           android:text="Share this Post" />
+        <CheckBox
+            android:id="@+id/chkBoxAnon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="Post as Anonymous" />
 
+        <Button
+            android:id="@+id/savePostBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/chkBoxAnon"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="64dp"
+            android:background="#FFCD05"
+            android:text="Share this Post" />
+
+        <CheckBox
+            android:id="@+id/chkBoxPostTemp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/chkBoxAnon"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/tempBtn"
+            android:text="Post with Temperature" />
+
+        <ImageButton
+            android:id="@+id/tempBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/chkBoxPostTemp"
+            android:layout_alignLeft="@+id/savePostBtn"
+            android:layout_marginLeft="14dp"
+            android:src="@drawable/small_temp_icon" />
     </RelativeLayout>
+
 </RelativeLayout>

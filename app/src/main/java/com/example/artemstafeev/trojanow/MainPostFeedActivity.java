@@ -6,6 +6,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.http.client.HttpClient;
@@ -19,10 +21,14 @@ import org.json.JSONObject;
 import com.example.post.Post;
 
 import android.support.v7.app.ActionBarActivity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +46,7 @@ public class MainPostFeedActivity extends ActionBarActivity implements OnClickLi
 	 final List<Post> listOfPosts = new ArrayList<Post>();
 	 String urlForGET = "http://cs578.roohy.me/status/list/";
 	 String urlForDELETE = "http://cs578.roohy.me/status/";
+	 String urlDel = "";
 	 String aStr="",bStr="";
 	 
 	 
@@ -62,12 +69,23 @@ public class MainPostFeedActivity extends ActionBarActivity implements OnClickLi
                 System.out.println("sadsfsf");
                
                 int postPK = listOfPosts.get(position).getPostID();
+                urlDel = urlForDELETE+postPK+"/";
+                String loggedUserID = "16";
+                String postUserID = listOfPosts.get(position).getUser();
+                String[] userDtl = postUserID.split(":");
+                postUserID = userDtl[1].trim();
                 
-                showToast(listOfPosts.get(position).getPostMessage()+" pk is "+postPK);
-                String urlDel = urlForDELETE+postPK+"/";
+                //showToast(listOfPosts.get(position).getPostMessage()+" post userID="+postUserID +"   logged UserID="+loggedUserID);
                 
-                DeletePostFromREST delPost = new DeletePostFromREST();
-                delPost.execute(new String[]{urlDel});
+                if(loggedUserID.equalsIgnoreCase(postUserID))
+                {
+                	createDialogBox();
+                	/*DeletePostFromREST delPost = new DeletePostFromREST();
+                	delPost.execute(new String[]{urlDel});*/
+                }
+                else{
+                	 showToast("Can't Delete. This is not your post.");	
+                }
                 
             }
         });
@@ -75,6 +93,47 @@ public class MainPostFeedActivity extends ActionBarActivity implements OnClickLi
         Button newPostBtn = (Button) findViewById(R.id.newPostBtn);
         newPostBtn.setOnClickListener(this);
     }
+	
+	/**
+	 * This method creates the decision dialog box when user clicks
+	 *  on a post, if post is posted by logged in user he gets a decision
+	 *  dialog to select to delete the post, else a message is shown
+	 *  
+	 */
+	public void createDialogBox(){
+		 //dialog= new AlertDialog(getActivity());
+		AlertDialog.Builder dialog=new AlertDialog.Builder(this);
+		String message="Delete Selected Post from TrojaNow?";
+		dialog.setMessage(message);
+		
+		dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				showToast("Delete Action Cancelled");
+				dialog.dismiss();
+			}
+		});
+		
+		dialog.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				dialog.dismiss();
+				DeletePostFromREST delPost = new DeletePostFromREST();
+            	delPost.execute(new String[]{urlDel});
+			}
+		});
+		
+		dialog.show();
+
+		/*AlertDialog alertDialog = dialog.create();
+		alertDialog.show();
+		TextView txt=(TextView)alertDialog.findViewById(android.R.id.message);
+		txt.setTextColor(Color.parseColor("#58c2e9"));
+		txt.setGravity(Gravity.CENTER);*/
+		
+	}
 
 
     @Override
@@ -170,8 +229,8 @@ public class MainPostFeedActivity extends ActionBarActivity implements OnClickLi
 
 		    protected void onPostExecute(String result)
 		    {
-		    	
-		    		 	System.out.println("size = " +listOfPosts.size());
+		    			System.out.println("size = " +listOfPosts.size());
+		    			Collections.sort(listOfPosts);
 		    		 	ListView list = (ListView) findViewById(R.id.PostList);
 		    	        PostAdapter adapter = new PostAdapter(getApplicationContext(), listOfPosts);
 		    	        list.setAdapter(adapter);
@@ -250,15 +309,18 @@ public class MainPostFeedActivity extends ActionBarActivity implements OnClickLi
 					        httpConn.connect();
 					        int respCode = httpConn.getResponseCode() ;
 					        System.out.println("response code after Delete -> "+ respCode);
-					        if(respCode == HttpURLConnection.HTTP_OK || respCode == HttpURLConnection.HTTP_ACCEPTED || respCode == HttpURLConnection.HTTP_NO_CONTENT)
+					        if((respCode == HttpURLConnection.HTTP_OK) 
+					        		|| (respCode == HttpURLConnection.HTTP_ACCEPTED) 
+					        		|| (respCode == HttpURLConnection.HTTP_NO_CONTENT))
 					            {
+					        		System.out.println("inside response if() ");
 					            	resultStr = "Success";	 
 					            	showToast("Post Successfully Deleted!");
 					   			}
 
 				        }catch (Exception exp)
 				        {
-				        	return exp.getMessage();
+				        	//return exp.getMessage();
 				        }
 			          return resultStr;
 			      
@@ -267,15 +329,12 @@ public class MainPostFeedActivity extends ActionBarActivity implements OnClickLi
 			    protected void onPostExecute(String result)
 			    {
 			    	
-	    		 	if(result.equals("Success"))
+	    		 	if(result.equalsIgnoreCase("Success"))
 	    		 	{
-	    		 		//populate the list again
-	    		 		//GetDataFromREST data = new GetDataFromREST();
-	    		       	//data.execute(new String[]{urlForGET});
 	    		 		 Intent intent= new Intent(MainPostFeedActivity.this, MainPostFeedActivity.class);
-	    		         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+	    		         finish();
 	    		         startActivity(intent);
-	    		 		//startActivity(this, MainPostFeedActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	    		 		
 	    		 	}
 	    		 	else
 	    		 	{
