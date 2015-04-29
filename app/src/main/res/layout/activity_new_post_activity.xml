@@ -76,20 +76,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true" >
 
-        <EditText
-            android:id="@+id/postMsgTextArea"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="top|left"
-            android:inputType="textMultiLine"
-            android:lines="8"
-            android:maxLines="10"
-            android:minLines="6"
-            android:scrollbars="vertical" >
-
-            <requestFocus />
-        </EditText>
-
         <CheckBox
             android:id="@+id/chkBoxAnon"
             android:layout_width="wrap_content"
@@ -118,14 +104,28 @@
             android:layout_toRightOf="@+id/tempBtn"
             android:text="Post with Temperature" />
 
+        <EditText
+            android:id="@+id/postMsgTextArea"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/chkBoxAnon"
+            android:layout_alignParentLeft="true"
+            android:ems="10"
+            android:gravity="top|left"
+            android:inputType="textMultiLine"
+            android:lines="8"
+            android:maxLines="10"
+            android:minLines="6"
+            android:scrollbars="vertical" />
+
         <ImageButton
             android:id="@+id/tempBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/chkBoxPostTemp"
-            android:layout_alignLeft="@+id/savePostBtn"
-            android:layout_marginLeft="14dp"
+            android:layout_below="@+id/chkBoxAnon"
+            android:layout_toLeftOf="@+id/chkBoxAnon"
             android:src="@drawable/small_temp_icon" />
+
     </RelativeLayout>
 
 </RelativeLayout>
