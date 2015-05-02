@@ -27,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.example.post.Post;
+import com.example.sensor.TemperatureSensor;
 
 import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
@@ -48,6 +49,7 @@ public class NewPostActivityActivity extends ActionBarActivity implements OnClic
 
 	private String textStr ="";
 	private String infoStr= "";
+	String temp = "";
 	String urlForSave = "http://cs578.roohy.me/status/list/";
 	String temp1 ="false", temp2 ="NA";
 	 String activeUserID ="";
@@ -65,6 +67,29 @@ public class NewPostActivityActivity extends ActionBarActivity implements OnClic
 		
 		Button newPostSaveBtn = (Button) findViewById(R.id.savePostBtn);
 		newPostSaveBtn.setOnClickListener(this);
+		
+		CheckBox getTemp = (CheckBox)findViewById(R.id.chkBoxPostTemp);
+
+		getTemp.setOnClickListener(new OnClickListener() {
+
+		      @Override
+		      public void onClick(View v) {
+		                //is chkIos checked?
+		        if (((CheckBox) v).isChecked()) {
+		           //Case 1
+		        	TemperatureSensor tSensor = new TemperatureSensor();
+		        	temp = tSensor.getTemperature(getApplicationContext());
+		        	if(temp.contains("No"))
+		        	{
+		        		Toast.makeText(getApplicationContext(),temp, Toast.LENGTH_LONG).show();
+		        	}
+		        }
+		        else {
+		          //case 2
+		        }
+
+		      }
+		    });
 	}
 
 	@Override

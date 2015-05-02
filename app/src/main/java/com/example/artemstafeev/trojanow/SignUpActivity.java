@@ -15,6 +15,12 @@ import android.view.ViewGroup;
 import android.os.Build;
 import android.widget.EditText;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,8 +33,9 @@ import java.net.URL;
 public class SignUpActivity extends ActionBarActivity {
 
     String myURL = "http://cs578.roohy.me/user/";
-    String result = "";
     public final static String EXTRA_MESSAGE = "com.example.artemstafeev.trojanow.MESSAGE";
+    public String username = "";
+    public String password = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,14 +90,16 @@ public class SignUpActivity extends ActionBarActivity {
 
     /** Called when the user touches the button */
     public void sendLogin(View view) {
-        EditText usernameText = (EditText)findViewById(R.id.editText4);
+        EditText usernameText = (EditText)findViewById(R.id.editText3);
         EditText passwordText = (EditText)findViewById(R.id.editText5);
 
-        String username = usernameText.getText().toString();
-        String password = passwordText.getText().toString();
+        username = usernameText.getText().toString();
+        password = passwordText.getText().toString();
 
-        String str=myURL+password;
-        UpdateDataTask getData = new UpdateDataTask();
+
+        String str=myURL+password+"/";
+        UpdateDataTask updateData = new UpdateDataTask();
+        updateData.execute(new String[]{str});
         try {
             //String name = getData.execute(str).get();
             //redirect to another activity
@@ -101,8 +110,8 @@ public class SignUpActivity extends ActionBarActivity {
 
         catch (Exception e){
             AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-            alertDialog.setTitle("Login Error");
-            alertDialog.setMessage("Incorrect login or password");
+            alertDialog.setTitle("Error");
+            alertDialog.setMessage("This user already exists");
             alertDialog.show();
         }
 
@@ -110,42 +119,34 @@ public class SignUpActivity extends ActionBarActivity {
 
     public class UpdateDataTask extends AsyncTask<String,Void,String> {
 
-        public String readMessage(JSONObject reader) throws IOException {
-            try {
-                return reader.getString("name");
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        public String convertStreamToString(java.io.InputStream is) {
-            java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-            return s.hasNext() ? s.next() : "";
-        }
 
         @Override
-        protected String doInBackground(String... myURL) {
+        protected String doInBackground(String... params) {
             try{
-                HttpURLConnection urlConnection = null;
-                URL url = new URL(myURL[0]);
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("PUT");
-                urlConnection.connect();
-                //System.out.println("got something");
-                // Read the input stream into a String
-                InputStream inputStream;
-                inputStream = urlConnection.getInputStream();
-                JSONObject reader;
-                //reader = new JSONObject(inputStream.toString());
 
-                reader = new JSONObject(convertStreamToString(inputStream));
+                HttpClient httpClient = new DefaultHttpClient();
+                HttpPut putReq = new HttpPut(params[0]);
+                putReq.setHeader("Accept", "application/json");
+                putReq.setHeader("Content-type", "application/json");
+                JSONObject dataToJSON = new JSONObject();
 
-                return readMessage(reader);
+                dataToJSON.put("pk", Integer.parseInt(password));
+                dataToJSON.put("uid", Integer.parseInt(password));
+                dataToJSON.put("name", username);
+                System.out.println("json obj" + dataToJSON.toString());
+                StringEntity entity = new StringEntity(dataToJSON.toString());
+                putReq.setEntity(entity);
+                HttpResponse response = (HttpResponse) httpClient.execute(putReq);
+                System.out.println("response is ----> "+ response);
+                int resCode = response.getStatusLine().getStatusCode();
+                System.out.println("response code = "+ resCode);
+
+                return "Success!";
 
             }
             catch (Exception e) {
-                return null;
+                System.out.println(e.getMessage());
+                return e.getMessage();
             }
         }
 
